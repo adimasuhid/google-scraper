@@ -9,6 +9,7 @@
   "author": "",
   "license": "BSD",
   "dependencies": {
+    "jade": "*",
     "express": "*",
     "open-uri": "*",
     "cheerio": "*"
