@@ -54,13 +54,14 @@ app.get("/:package_name/:keyword", function(req, res){
     var url = "https://play.google.com/store/search?q="+keyword+"&c=apps";
     console.log(url);
     var ranks = [];
-    open(url, function(err, google) {
-        ranks = parseGoogle(err, google);
-        var rank = getPackageRank(err, package_name, ranks);
-        console.log(rank);
+    //open(url, function(err, google) {
+        //ranks = parseGoogle(err, google);
+        //var rank = getPackageRank(err, package_name, ranks);
+        //console.log(rank);
 
-        res.render("page", {package_rank: rank});
-    });
+        //res.render("page", {package_rank: rank});
+    //});
+    res.render("page")
 });
 
 

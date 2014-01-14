@@ -1,0 +1,23 @@
+{
+  "name": "google-scraper",
+  "version": "0.0.1",
+  "homepage": "https://github.com/adimasuhid/google-scraper",
+  "authors": [
+    "Ace Dimasuhid <ace.dimasuhid@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "underscore": "*",
+    "jquery": "*",
+    "backbone": "*",
+    "d3": "*",
+    "nvd3": "*"
+  }
+}
