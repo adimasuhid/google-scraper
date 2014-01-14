@@ -9,6 +9,8 @@ var moment = require('moment');
 var models = require('./db/models');
 var mongoose = require('mongoose');
 
+var uristring = process.env.MONGOLAB_URI || 'mongodb://localhost/google-scraper';
+
 var query = "kids"
 var url = "https://play.google.com/store/search?q="+query+"&c=apps"
 
@@ -62,7 +64,7 @@ function saveRank(err, package_rank, keyword){
 }
 
 function connectToMongo(callback){
-    mongoose.connect('mongodb://localhost/google-scraper');
+    mongoose.connect(uristring);
     mongoose.connection.on('open', function(){
         callback();
     });
