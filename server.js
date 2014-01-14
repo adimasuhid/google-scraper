@@ -64,7 +64,13 @@ function saveRank(err, package_rank, keyword){
 }
 
 function connectToMongo(callback){
-    mongoose.connect(uristring);
+    mongoose.connect(uristring, function(err, res){
+        if (err) {
+            console.log('Error connecting to: ' + uristring + '. ' + err);
+        } else {
+            console.log('Succeeded connected to: ' + uristring);
+        }
+    });
     mongoose.connection.on('open', function(){
         callback();
     });
