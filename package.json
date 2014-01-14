@@ -12,6 +12,7 @@
     "jade": "*",
     "express": "*",
     "open-uri": "*",
-    "cheerio": "*"
+    "cheerio": "*",
+    "underscore": "*"
   }
 }

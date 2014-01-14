@@ -1,2 +1,2 @@
-web: node download.js
+web: node server.js
 
