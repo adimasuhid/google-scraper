@@ -78,7 +78,11 @@ connectToMongo(function(){
 });
 
 app.get("/rank/:package_name", function(req, res){
-    res.json({"lala": "mot"});
+    var package_name = req.params.package_name;
+    models.PackageRank.find({package_name: package_name}).exec(function(err,data){
+        console.log(data);
+        res.json(data);
+    });
 });
 
 app.get("/:package_name/:keyword", function(req, res){
