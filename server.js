@@ -48,6 +48,26 @@ function getPackageRank(err, package_name, collection){
     });
 }
 
+function sortByKeyword(err, keyword, collection) {
+    return _.filter(collection, function(package_rank) {
+        return package_rank["keyword"] == keyword;
+    });
+}
+
+function getGraphValues(err, collection, color) {
+    var keyword = _.first(collection)["keyword"];
+    var values = _.map(collection, function(package_rank){
+        return package_rank["rank"];
+    });
+
+    return {
+        values: values,
+        key: keyword,
+        color: color
+    }
+
+}
+
 function saveRank(err, package_rank, keyword){
     var value = models.PackageRank.create({
         package_name: package_rank["package_name"],
@@ -77,6 +97,10 @@ connectToMongo(function(){
 
 });
 
+app.get("/", function(req, res){
+    res.render("index");
+});
+
 app.get("/rank/:package_name", function(req, res){
     var package_name = req.params.package_name;
     models.PackageRank.find({package_name: package_name}).exec(function(err,data){
@@ -84,6 +108,8 @@ app.get("/rank/:package_name", function(req, res){
         res.json(data);
     });
 });
+
+
 
 app.get("/:package_name/:keyword", function(req, res){
     var package_name = encodeURIComponent(req.params.package_name);
