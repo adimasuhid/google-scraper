@@ -13,6 +13,8 @@
     "express": "*",
     "open-uri": "*",
     "cheerio": "*",
-    "underscore": "*"
+    "underscore": "*",
+    "mongoose": "*",
+    "moment": "*"
   }
 }

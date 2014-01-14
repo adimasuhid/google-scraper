@@ -5,6 +5,9 @@ var server = http.createServer(app);
 var open = require('open-uri');
 var cheerio = require('cheerio');
 var _ = require('underscore');
+var moment = require('moment');
+var models = require('./db/models');
+var mongoose = require('mongoose');
 
 var query = "kids"
 var url = "https://play.google.com/store/search?q="+query+"&c=apps"
@@ -16,8 +19,7 @@ app.set('view engine', "jade");
 app.engine('jade', require('jade').__express);
 app.use(express.static(__dirname + '/public'));
 
-server.listen(port);
-
+//refactor this to a different file, but make it work first
 
 function parseGoogle(err, data) {
     var ranking = [];
@@ -46,6 +48,39 @@ function getPackageRank(err, package_name, collection){
     });
 }
 
+function saveRank(err, package_rank, keyword){
+    var value = models.PackageRank.create({
+        package_name: package_rank["package_name"],
+        keyword: keyword,
+        rank: package_rank["rank"],
+        rank_date: moment()
+    });
+
+    console.log("saving rank..");
+
+    return value;
+}
+
+function connectToMongo(callback){
+    mongoose.connect('mongodb://localhost/google-scraper');
+    mongoose.connection.on('open', function(){
+        callback();
+    });
+}
+
+connectToMongo(function(){
+
+    console.log('Connected to Mongo');
+    server.listen(port, function(){
+      console.log('Express server listening on port ' + port);
+    });
+
+});
+
+app.get("/rank/:package_name", function(req, res){
+    res.json({"lala": "mot"});
+});
+
 app.get("/:package_name/:keyword", function(req, res){
     var package_name = encodeURIComponent(req.params.package_name);
     var keyword = encodeURIComponent(req.params.keyword);
@@ -54,14 +89,16 @@ app.get("/:package_name/:keyword", function(req, res){
     var url = "https://play.google.com/store/search?q="+keyword+"&c=apps";
     console.log(url);
     var ranks = [];
-    //open(url, function(err, google) {
-        //ranks = parseGoogle(err, google);
-        //var rank = getPackageRank(err, package_name, ranks);
-        //console.log(rank);
+    open(url, function(err, google) {
+        ranks = parseGoogle(err, google);
+        var rank = getPackageRank(err, package_name, ranks);
+        console.log(rank);
 
-        //res.render("page", {package_rank: rank});
-    //});
-    res.render("page", {package_rank: "lalalal"})
+        var value = saveRank(err, rank, keyword);
+        console.log(value);
+        res.render("page", {package_rank: rank});
+    });
+    //res.render("page", {package_rank: "lalalal"})
 });
 
 
