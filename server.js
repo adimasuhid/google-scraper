@@ -56,6 +56,10 @@ function saveRank(err, package_rank, keyword){
         keyword: keyword,
         rank: package_rank["rank"],
         rank_date: Date.now
+    }, function(err){
+        if(err) {
+            console.log("Failed to save due to: " + err);
+        }
     });
 
     console.log("saving rank..");
