@@ -61,7 +61,7 @@ app.get("/:package_name/:keyword", function(req, res){
 
         //res.render("page", {package_rank: rank});
     //});
-    res.render("page")
+    res.render("page", {package_rank: "lalalal"})
 });
 
 
