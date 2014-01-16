@@ -64,7 +64,8 @@ BackboneApp.views.GraphView = Backbone.View.extend({
         nv.addGraph(function() {
           var values = that.getGraphValues();
           console.log(values);
-          var chart = nv.models.lineChart();
+          var chart = nv.models.lineChart()
+            .yDomain([50,1]);
 
           chart.xAxis
               .axisLabel('Date')
