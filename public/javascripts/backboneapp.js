@@ -124,6 +124,13 @@ BackboneApp.views.GraphView = Backbone.View.extend({
               .transition().duration(500)
               .call(chart);
 
+          d3.select('#chart svg')
+              .append("text")
+              .attr("x", 500)
+              .attr("y", 20)
+              .attr("text-anchor", "middle")
+              .text(that.package_name + " by keywords");
+
           nv.utils.windowResize(function() { d3.select('#chart svg').call(chart) });
 
           return chart;
