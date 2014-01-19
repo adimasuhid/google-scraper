@@ -1,4 +1,6 @@
 window.onload = function(){
-    var graphView = new BackboneApp.views.GraphView();
+    var router = new BackboneApp.routers.Router();
+    Backbone.history.start();
+    //var graphView = new BackboneApp.views.GraphView();
 
 }

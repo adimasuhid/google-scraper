@@ -5,22 +5,67 @@ window.BackboneApp = {
     collections: {}
 }
 
+BackboneApp.routers.Router = Backbone.Router.extend({
+    initialize: function(){
+        this.current_view = null;
+    },
+
+    routes: {
+        "" : "defaultRoute",
+        "package/:package_name": "showGraph"
+    },
+
+    defaultRoute: function(){
+        this.removeBinding();
+        this.current_view = new BackboneApp.views.DefaultView();
+        this.current_view.render();
+    },
+
+    showGraph: function(package_name){
+        this.removeBinding();
+        var that = this
+        $.get("/packages/"+package_name, function(data){
+            if(_.isEmpty(data)){
+                that.navigate("", {trigger: true});
+            } else {
+                var right_package = _.first(data);
+                that.current_view = new BackboneApp.views.GraphView({
+                    package_name: right_package.package_name,
+                    keywords: right_package.keywords
+                });
+            }
+        });
+    },
+
+    removeBinding: function(){
+        if (!(this.current_view === null)){
+            this.current_view.undelegateEvents();
+        }
+    }
+});
+
+BackboneApp.views.DefaultView = Backbone.View.extend({
+    template: JST["defaultView"],
+    el: "#chart",
+    render: function(){
+        $(this.el).html(this.template());
+    }
+});
+
 BackboneApp.views.GraphView = Backbone.View.extend({
     el: "#chart",
-    initialize: function(){
+    initialize: function(options){
         that = this;
-        this.keywords = ["kids", "cowdefence"];
-        this.colors = ["#ff7f0e", "#2ca02c"];
-        $.get("/rank/com.divmob.cowdefence", function(data){
+        this.package_name = options.package_name;
+        this.keywords = options.keywords;
+        this.colors = ["#ff7f0e", "#2ca02c", "#4fa8af", "#4fa8af", "#9f9600", "#a9babb", "#b3da2e", "#43eed2", "#18521e", "#f4aead"];
+        $.get("/rank/"+that.package_name, function(data){
             that.package_ranks = data;
             that.render();
         });
     },
 
     render: function(){
-        //$(this.el).html(this.package_ranks);
-        console.log(this.package_ranks);
-        console.log(this.getGraphValues());
         this.renderGraph()
 
         return this
@@ -63,7 +108,6 @@ BackboneApp.views.GraphView = Backbone.View.extend({
     renderGraph: function(){
         nv.addGraph(function() {
           var values = that.getGraphValues();
-          console.log(values);
           var chart = nv.models.lineChart()
             .yDomain([50,1]);
 
@@ -77,7 +121,7 @@ BackboneApp.views.GraphView = Backbone.View.extend({
 
           d3.select('#chart svg')
               .datum(values)
-            .transition().duration(500)
+              .transition().duration(500)
               .call(chart);
 
           nv.utils.windowResize(function() { d3.select('#chart svg').call(chart) });

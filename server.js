@@ -8,6 +8,7 @@ var _ = require('underscore');
 var moment = require('moment');
 var models = require('./db/models');
 var mongoose = require('mongoose');
+var packages = require('./config/packages.js')
 
 var uristring = process.env.MONGOLAB_URI || 'mongodb://localhost/google-scraper';
 
@@ -98,6 +99,14 @@ app.get("/rank/:package_name", function(req, res){
     models.PackageRank.find({package_name: package_name}).exec(function(err,data){
         res.json(data);
     });
+});
+
+app.get("/packages/:package_name", function(req,res){
+    var package_name = req.params.package_name;
+    var the_package = _.filter(packages, function(package){
+        return package.package_name === package_name;
+    });
+    res.json(the_package);
 });
 
 app.get("/:package_name/:keyword", function(req, res){
