@@ -5,19 +5,29 @@ var mongoose = require('mongoose');
 var open = require('open-uri');
 var cheerio = require('cheerio');
 var uristring = process.env.MONGOLAB_URI || 'mongodb://localhost/google-scraper';
+var packages = require("./config/config.js")
 
 //needs some hardcore refactoring
-function openStuff(){
+function openStuff(err){
     port = process.env.port || 3000
-    host = "http://google-scraper.herokuapp.com:"+ port
-    url1 = host +"/com.divmob.cowdefence/kids"
-    url2 = host + "/com.divmob.cowdefence/cowdefence"
-    open(url1, function(){
-        console.log("saved kids");
+    host = "http://localhost:"+ port
+    if(err) console.log(err)
+    _.each(packages, function(package_rank){
+        goThroughKeywords(err,package_rank.package_name, package_rank.keywords);
     });
+}
 
-    open(url2, function(){
-        console.log("cowdefence");
+function goThroughKeywords(err,name, keywords){
+    _.each(keywords, function(keyword){
+        url = host + "/" + name + "/" + keyword
+        triggerOpen(err, url, name, keyword);
+    });
+}
+
+function triggerOpen(err,url,name, keyword){
+    open(url, function(err){
+        if(err) console.log(err);
+        console.log("opening "+name+" on "+keyword+"...");
     });
 }
 
