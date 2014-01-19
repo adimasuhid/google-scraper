@@ -17,13 +17,16 @@ BackboneApp.routers.Router = Backbone.Router.extend({
 
     defaultRoute: function(){
         this.removeBinding();
-        this.current_view = new BackboneApp.views.DefaultView();
-        this.current_view.render();
+        $.get("/packages", function(data){
+            this.current_view = new BackboneApp.views.DefaultView({packages: data});
+            this.current_view.render();
+        });
     },
 
     showGraph: function(package_name){
         this.removeBinding();
         var that = this
+        console.log("yep showing")
         $.get("/packages/"+package_name, function(data){
             if(_.isEmpty(data)){
                 that.navigate("", {trigger: true});
@@ -40,20 +43,38 @@ BackboneApp.routers.Router = Backbone.Router.extend({
     removeBinding: function(){
         if (!(this.current_view === null)){
             this.current_view.undelegateEvents();
+            $(this.current_view.el).html();
         }
     }
 });
 
 BackboneApp.views.DefaultView = Backbone.View.extend({
+    initialize: function(options){
+        this.packages = options.packages
+    },
+
+    events: {
+        "click button": "goToGraph"
+    },
+
     template: JST["defaultView"],
     el: "#chart",
     render: function(){
-        $(this.el).html(this.template());
+        $(this.el).html(this.template({ packages: this.packages }));
+    },
+
+    goToGraph: function(e){
+        var package_name = $(e.target).attr("data-package");
+        window.router.navigate("package/"+package_name, {trigger: true});
     }
 });
 
 BackboneApp.views.GraphView = Backbone.View.extend({
+    template: JST["graphView"],
     el: "#chart",
+    events: {
+        "click button": "goToIndex"
+    },
     initialize: function(options){
         that = this;
         this.package_name = options.package_name;
@@ -66,9 +87,14 @@ BackboneApp.views.GraphView = Backbone.View.extend({
     },
 
     render: function(){
+        $(this.el).html(this.template());
         this.renderGraph()
 
         return this
+    },
+
+    goToIndex: function(){
+        window.router.navigate("", {trigger: true});
     },
 
     sortByKeyword: function(keyword, collection) {

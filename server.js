@@ -109,6 +109,10 @@ app.get("/packages/:package_name", function(req,res){
     res.json(the_package);
 });
 
+app.get("/packages", function(req, res){
+    res.json(packages);
+});
+
 app.get("/:package_name/:keyword", function(req, res){
     var package_name = encodeURIComponent(req.params.package_name);
     var keyword = encodeURIComponent(req.params.keyword);
