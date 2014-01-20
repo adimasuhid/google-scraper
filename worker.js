@@ -28,7 +28,7 @@ function getPackages(callback){
 
 function goThroughKeywords(err,name, keywords){
     _.each(keywords, function(keyword){
-        url = host + "/" + name + "/" + keyword
+        url = host + "/" + name + "/" + encodeURIComponent(keyword)
         triggerOpen(err, url, name, keyword);
     });
 }

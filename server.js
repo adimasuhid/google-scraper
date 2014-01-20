@@ -178,8 +178,10 @@ app.get("/:package_name/:keyword", function(req, res){
         ranks = parseGoogle(err, google);
         var rank = getPackageRank(err, package_name, ranks);
         console.log(rank);
-
-        var value = saveRank(err, rank, keyword);
+        if (typeof rank === "undefined"){
+            rank = { package_name: package_name, rank: "100"}
+        }
+        var value = saveRank(err, rank, decodeURIComponent(keyword));
         console.log(value);
         res.render("page", {package_rank: rank});
     });
