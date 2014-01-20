@@ -21,6 +21,7 @@ app.set('views', __dirname + '/tpl');
 app.set('view engine', "jade");
 app.engine('jade', require('jade').__express);
 app.use(express.static(__dirname + '/public'));
+app.use(express.bodyParser());
 
 //refactor this to a different file, but make it work first
 
@@ -68,6 +69,39 @@ function saveRank(err, package_rank, keyword){
     return value;
 }
 
+function savePackage(package){
+    var value = true
+    models.Package.create({
+        package_name: package["package_name"],
+        keywords: package["keywords"].split(",")
+    }, function(err){
+        if(err) {
+            value = false
+            console.log("Failed to save due to: " + err);
+        }
+    });
+
+    console.log("saving "+ package.package_name +"package..");
+
+    return value;
+}
+
+function deletePackage(id){
+    var value = true
+    models.Package.remove({
+        _id:  id
+    }, function(err){
+        if(err) {
+            console.log("Failed to save due to: " + err);
+            value = false;
+        }
+    });
+
+    console.log("deleting package "+ id + "...");
+
+    return value;
+}
+
 function connectToMongo(callback){
     mongoose.connect(uristring, function(err, res){
         if (err) {
@@ -90,10 +124,12 @@ connectToMongo(function(){
 
 });
 
+//render first page
 app.get("/", function(req, res){
     res.render("index");
 });
 
+//get package rank
 app.get("/rank/:package_name", function(req, res){
     var package_name = req.params.package_name;
     models.PackageRank.find({package_name: package_name}).exec(function(err,data){
@@ -101,6 +137,7 @@ app.get("/rank/:package_name", function(req, res){
     });
 });
 
+//get package
 app.get("/packages/:package_name", function(req,res){
     var package_name = req.params.package_name;
     var the_package = _.filter(packages, function(package){
@@ -109,10 +146,22 @@ app.get("/packages/:package_name", function(req,res){
     res.json(the_package);
 });
 
+//get all packages
 app.get("/packages", function(req, res){
     res.json(packages);
 });
 
+//save packages
+app.post("/packages", function(req, res){
+    res.json(savePackage(req.body));
+});
+
+//delete packages
+app.post("/packages/delete", function(req, res){
+    res.json(deletePackage(req.body.id));
+});
+
+//save packages
 app.get("/:package_name/:keyword", function(req, res){
     var package_name = encodeURIComponent(req.params.package_name);
     var keyword = encodeURIComponent(req.params.keyword);

@@ -1,4 +1,5 @@
 module.exports = {
-    PackageRank: require('./PackageRank')
+    PackageRank: require('./PackageRank'),
+    Package: require('./Package')
 };
 
