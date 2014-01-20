@@ -73,7 +73,7 @@ function savePackage(package){
     var value = true
     models.Package.create({
         package_name: package["package_name"],
-        keywords: package["keywords"].split(",")
+        keywords: package["keywords"],
     }, function(err){
         if(err) {
             value = false

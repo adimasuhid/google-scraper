@@ -12,7 +12,8 @@ BackboneApp.routers.Router = Backbone.Router.extend({
 
     routes: {
         "" : "defaultRoute",
-        "package/:package_name": "showGraph"
+        "package/:package_name": "showGraph",
+        "packages" : "addPackages"
     },
 
     defaultRoute: function(){
@@ -26,7 +27,6 @@ BackboneApp.routers.Router = Backbone.Router.extend({
     showGraph: function(package_name){
         this.removeBinding();
         var that = this
-        console.log("yep showing")
         $.get("/packages/"+package_name, function(data){
             if(_.isEmpty(data)){
                 that.navigate("", {trigger: true});
@@ -37,6 +37,17 @@ BackboneApp.routers.Router = Backbone.Router.extend({
                     keywords: right_package.keywords
                 });
             }
+        });
+    },
+
+    addPackages: function(){
+        var that = this
+        this.removeBinding();
+        $.get("/packages", function(data){
+            that.current_view = new BackboneApp.views.AddPackageView({
+                packages: data
+            });
+            that.current_view.render();
         });
     },
 
@@ -54,7 +65,8 @@ BackboneApp.views.DefaultView = Backbone.View.extend({
     },
 
     events: {
-        "click button": "goToGraph"
+        "click .package": "goToGraph",
+        "click .add-package": "goToAdd"
     },
 
     template: JST["defaultView"],
@@ -66,11 +78,63 @@ BackboneApp.views.DefaultView = Backbone.View.extend({
     goToGraph: function(e){
         var package_name = $(e.target).attr("data-package");
         window.router.navigate("package/"+package_name, {trigger: true});
+    },
+
+    goToAdd: function(){
+        window.router.navigate("packages", {trigger: true});
+    }
+});
+
+BackboneApp.views.AddPackageView = Backbone.View.extend({
+    events: {
+        "click .apps-index" : "goToIndex",
+        "click .remove-package" : "removePackage",
+        "click .add-package" : "addPackage"
+    },
+    template: JST["allPackagesView"],
+    header_template: JST["addPackageHeaderView"],
+    add_template: JST["addPackageView"],
+
+    el: "#chart",
+    initialize: function(options){
+        that = this;
+        this.packages = options.packages;
+    },
+
+    render: function(){
+        $(this.el).html(this.header_template());
+        $(this.el).append(this.add_template());
+        $(this.el).append(this.template({packages: this.packages}));
+    },
+
+    goToIndex: function(){
+        window.router.navigate("", {trigger: true});
+    },
+
+    removePackage: function(e){
+        var id = $(e.target).attr("id")
+        $.post("/packages/delete", {id: id}, function(){
+            Backbone.history.loadUrl( Backbone.history.fragment )
+        });
+    },
+
+    addPackage: function(){
+        console.log("adding bitch");
+        var package_name = $("#package-name").val();
+        var keywords = $("#package-keywords").val().split(",");
+
+        $.post("packages", {
+            package_name: package_name,
+            keywords: keywords
+        }, function(){
+            Backbone.history.loadUrl( Backbone.history.fragment )
+        });
     }
 });
 
 BackboneApp.views.GraphView = Backbone.View.extend({
     template: JST["graphView"],
+    no_data_template: JST["noDataView"],
     el: "#chart",
     events: {
         "click button": "goToIndex"
@@ -82,7 +146,11 @@ BackboneApp.views.GraphView = Backbone.View.extend({
         this.colors = ["#ff7f0e", "#2ca02c", "#4fa8af", "#4fa8af", "#9f9600", "#a9babb", "#b3da2e", "#43eed2", "#18521e", "#f4aead"];
         $.get("/rank/"+that.package_name, function(data){
             that.package_ranks = data;
-            that.render();
+            if(_.isEmpty(that.package_ranks)){
+                that.renderBlank();
+            } else {
+                that.render();
+            }
         });
     },
 
@@ -90,7 +158,13 @@ BackboneApp.views.GraphView = Backbone.View.extend({
         $(this.el).html(this.template());
         this.renderGraph()
 
-        return this
+        return this;
+    },
+
+    renderBlank: function(){
+        $(this.el).html(this.no_data_template());
+
+        return this;
     },
 
     goToIndex: function(){
