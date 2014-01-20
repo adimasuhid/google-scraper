@@ -139,16 +139,20 @@ app.get("/rank/:package_name", function(req, res){
 
 //get package
 app.get("/packages/:package_name", function(req,res){
-    var package_name = req.params.package_name;
-    var the_package = _.filter(packages, function(package){
-        return package.package_name === package_name;
+    models.Package.find().exec(function(err, packages){
+        var package_name = req.params.package_name;
+        var the_package = _.filter(packages, function(package){
+            return package.package_name === package_name;
+        });
+        res.json(the_package);
     });
-    res.json(the_package);
 });
 
 //get all packages
 app.get("/packages", function(req, res){
-    res.json(packages);
+    models.Package.find().exec(function(err,data){
+        res.json(data);
+    });
 });
 
 //save packages
