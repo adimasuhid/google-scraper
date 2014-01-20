@@ -8,6 +8,7 @@ var _ = require('underscore');
 var moment = require('moment');
 var models = require('./db/models');
 var mongoose = require('mongoose');
+var gather = require('./lib/gather');
 
 var uristring = process.env.MONGOLAB_URI || 'mongodb://localhost/google-scraper';
 
@@ -184,6 +185,11 @@ app.post("/packages/delete", function(req, res){
 //update packages
 app.post("/packages/update", function(req, res){
     res.json(updatePackage(req.body));
+});
+
+app.post("/gather", function(req, res){
+    gather();
+    res.json(true);
 });
 
 //save packages

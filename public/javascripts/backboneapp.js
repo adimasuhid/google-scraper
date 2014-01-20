@@ -61,12 +61,14 @@ BackboneApp.routers.Router = Backbone.Router.extend({
 
 BackboneApp.views.DefaultView = Backbone.View.extend({
     initialize: function(options){
+        that = this;
         this.packages = options.packages
     },
 
     events: {
         "click .package": "goToGraph",
-        "click .add-package": "goToAdd"
+        "click .add-package": "goToAdd",
+        "click .force-load": "forceLoad"
     },
 
     template: JST["defaultView"],
@@ -82,7 +84,13 @@ BackboneApp.views.DefaultView = Backbone.View.extend({
 
     goToAdd: function(){
         window.router.navigate("packages", {trigger: true});
-    }
+    },
+
+    forceLoad: function(){
+        $.post("/gather", function(data){
+            $(that.el).prepend("<h4>Force Loading data. Check graphs after some minutes.</h4>");
+        });
+    },
 });
 
 BackboneApp.views.AddPackageView = Backbone.View.extend({

@@ -1,6 +1,8 @@
 window.JST = {}
 
 JST["defaultView"] = _.template("\
+        <button class='force-load'>Force Gather all Data</button>\
+        <small>Warning: Might cause double data for some packages</small> \
         <h1>No App specified or No Such App in Record</h1> \
         <p>Add One</p> \
         <button class='add-package'>Add Package</button>\
