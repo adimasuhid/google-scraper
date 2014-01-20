@@ -12,8 +12,17 @@ function openStuff(err){
     port = process.env.port || 3000
     host = "http://localhost:"+ port
     if(err) console.log(err)
-    _.each(packages, function(package_rank){
-        goThroughKeywords(err,package_rank.package_name, package_rank.keywords);
+    getPackages(function(packages){
+        _.each(packages, function(package_rank){
+            goThroughKeywords(err,package_rank.package_name, package_rank.keywords);
+        });
+    });
+}
+
+function getPackages(callback){
+    open(host+"/packages", function(err, packages){
+        if(err) console.log(err)
+        callback(packages);
     });
 }
 
