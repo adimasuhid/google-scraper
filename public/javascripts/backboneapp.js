@@ -125,7 +125,7 @@ BackboneApp.views.AddPackageView = Backbone.View.extend({
 
         $.post("packages", {
             package_name: package_name,
-            keywords: keywords
+            keywords: _.map(keywords, function(keyword){return keyword.trim()})
         }, function(){
             Backbone.history.loadUrl( Backbone.history.fragment )
         });
