@@ -5,7 +5,6 @@ var mongoose = require('mongoose');
 var open = require('open-uri');
 var cheerio = require('cheerio');
 var uristring = process.env.MONGOLAB_URI || 'mongodb://localhost/google-scraper';
-var packages = require("./config/packages.js")
 
 //needs some hardcore refactoring
 function openStuff(err){

@@ -8,7 +8,6 @@ var _ = require('underscore');
 var moment = require('moment');
 var models = require('./db/models');
 var mongoose = require('mongoose');
-var packages = require('./config/packages.js')
 
 var uristring = process.env.MONGOLAB_URI || 'mongodb://localhost/google-scraper';
 
@@ -82,6 +81,24 @@ function savePackage(package){
     });
 
     console.log("saving "+ package.package_name +"package..");
+
+    return value;
+}
+
+function updatePackage(package){
+    var value = true
+    console.log(package);
+    models.Package.update({_id: package["id"]}, {
+        package_name: package["package_name"],
+        keywords: package["keywords"],
+    }, function(err){
+        if(err) {
+            value = false
+            console.log("Failed to save due to: " + err);
+        }
+    });
+
+    console.log("updating "+ package.package_name +"package..");
 
     return value;
 }
@@ -163,6 +180,10 @@ app.post("/packages", function(req, res){
 //delete packages
 app.post("/packages/delete", function(req, res){
     res.json(deletePackage(req.body.id));
+});
+//update packages
+app.post("/packages/update", function(req, res){
+    res.json(updatePackage(req.body));
 });
 
 //save packages

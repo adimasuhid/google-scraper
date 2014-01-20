@@ -89,16 +89,20 @@ BackboneApp.views.AddPackageView = Backbone.View.extend({
     events: {
         "click .apps-index" : "goToIndex",
         "click .remove-package" : "removePackage",
-        "click .add-package" : "addPackage"
+        "click .add-package" : "addPackage",
+        "click .edit-package" : "editPackage",
+        "click .save-package" : "savePackage"
     },
     template: JST["allPackagesView"],
     header_template: JST["addPackageHeaderView"],
     add_template: JST["addPackageView"],
+    save_button: JST["savePackageButton"],
 
     el: "#chart",
     initialize: function(options){
         that = this;
         this.packages = options.packages;
+        this.current_id = null;
     },
 
     render: function(){
@@ -118,8 +122,32 @@ BackboneApp.views.AddPackageView = Backbone.View.extend({
         });
     },
 
+    editPackage: function(e){
+        var id = $(e.target).attr("id")
+        this.current_id = $(e.target).attr("data-id");
+        $.get("/packages/"+id, function(data){
+            data = _.first(data);
+            $("#package-name").val(data.package_name);
+            $("#package-keywords").val(data.keywords.join());
+            $("#add-package-form button").html("Save Package");
+            $("#add-package-form button").addClass("save-package");
+            $("#add-package-form button").removeClass("add-package");
+        });
+    },
+
+    savePackage: function(){
+        var package_name = $("#package-name").val();
+        var keywords = $("#package-keywords").val().split(",");
+        $.post("packages/update",{
+            id: that.current_id,
+            package_name: package_name,
+            keywords: keywords
+        }, function(){
+            Backbone.history.loadUrl( Backbone.history.fragment )
+        });
+    },
+
     addPackage: function(){
-        console.log("adding bitch");
         var package_name = $("#package-name").val();
         var keywords = $("#package-keywords").val().split(",");
 
