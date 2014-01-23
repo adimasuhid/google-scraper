@@ -206,7 +206,7 @@ app.get("/:package_name/:keyword", function(req, res){
         var rank = getPackageRank(err, package_name, ranks);
         console.log(rank);
         if (typeof rank === "undefined"){
-            rank = { package_name: package_name, rank: "100"}
+            rank = { package_name: package_name, rank: null}
         }
         var value = saveRank(err, rank, decodeURIComponent(keyword));
         console.log(value);
