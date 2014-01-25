@@ -15,6 +15,7 @@ JST["defaultView"] = _.template("\
 
 JST["graphView"] = _.template("\
         <button>Back to Apps</button> \
+        <strong><%= name %> by keywords</strong> \
         <svg></svg> \
     ");
 

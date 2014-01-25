@@ -191,7 +191,7 @@ BackboneApp.views.GraphView = Backbone.View.extend({
     },
 
     render: function(){
-        $(this.el).html(this.template());
+        $(this.el).html(this.template({name: this.package_name}));
         this.renderGraph()
 
         return this;
@@ -259,12 +259,6 @@ BackboneApp.views.GraphView = Backbone.View.extend({
               .datum(values)
               .transition().duration(500)
               .call(chart);
-
-          d3.select('#chart svg')
-              .append("text")
-              .attr("x", 70)
-              .attr("y", 20)
-              .text(that.package_name + " by keywords");
 
           nv.utils.windowResize(function() { d3.select('#chart svg').call(chart) });
 
