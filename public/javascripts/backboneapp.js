@@ -215,9 +215,22 @@ BackboneApp.views.GraphView = Backbone.View.extend({
 
     getKeywordRank: function(collection, color) {
         var keyword = _.first(collection)["keyword"];
-        var values = _.map(collection, function(package_rank){
-            return { x: new Date(package_rank["rank_date"]).getTime(), y: package_rank["rank"] };
+        var processed_collection = this.processCollection(collection);
+        var dates = this.getUniqueDates(processed_collection);
+        var uniques = this.getUniqueValuePerDate(dates, processed_collection);
+
+        var values = _.map(uniques, function(package_rank){
+            //console.log(typeof(new Date(package_rank["rank_date"]).getMonth()))
+            //console.log(new Date(package_rank["rank_date"]).getTime())
+            return { x: package_rank["time_date"], y: package_rank["rank"] };
         });
+
+        console.log(values)
+        //var processed_collection = this.processCollection(collection);
+        //var dates = this.getUniqueDates(processed_collection);
+        //console.log(this.processCollection(collection));
+        //console.log(this.getUniqueValuePerDate(dates, processed_collection));
+        //console.log(dates)
 
         return {
             values: values,
@@ -227,15 +240,51 @@ BackboneApp.views.GraphView = Backbone.View.extend({
 
     },
 
+    getUniqueDates: function(values){
+        return _.uniq(
+                _.pluck(values, "string_date")
+            )
+    },
+
+    getUniqueValuePerDate: function(unique_dates, processed_collection){
+        var values = [];
+        _.each(unique_dates, function(date){
+            var unique_value = _.find(processed_collection, function(entry){
+                return entry.string_date === date
+            });
+            values.push(unique_value);
+        });
+
+        return values;
+    },
+
+    processCollection: function(values){
+        var values =  _.map(values, function(package_rank){
+            var date = new Date(package_rank["rank_date"]);
+            var month = date.getMonth().toString();
+            var year = date.getFullYear().toString();
+            var day = date.getDate().toString();
+
+            return { string_date: (year+month+day), time_date: date.getTime(), rank: package_rank["rank"]}
+        });
+
+        return _.sortBy(values,function(value){
+            return _.isNull(value.rank) ;
+        });
+    },
+
     getGraphValues: function(){
         var count = 0;
         var graph_values = [];
 
         _.each(this.keywords, function(word){
             var sorted_packages = that.sortByKeyword(word, that.package_ranks);
-            var value = that.getKeywordRank(sorted_packages, that.colors[count]);
-            graph_values.push(value);
-            count = count+1;
+            if (!_.isEmpty(sorted_packages)){
+                var value = that.getKeywordRank(sorted_packages, that.colors[count]);
+                graph_values.push(value);
+                count = count+1;
+                if (count == 10) {count = 0}
+            }
         });
 
         return graph_values;
