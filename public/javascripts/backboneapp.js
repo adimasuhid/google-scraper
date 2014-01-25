@@ -220,17 +220,8 @@ BackboneApp.views.GraphView = Backbone.View.extend({
         var uniques = this.getUniqueValuePerDate(dates, processed_collection);
 
         var values = _.map(uniques, function(package_rank){
-            //console.log(typeof(new Date(package_rank["rank_date"]).getMonth()))
-            //console.log(new Date(package_rank["rank_date"]).getTime())
             return { x: package_rank["time_date"], y: package_rank["rank"] };
         });
-
-        console.log(values)
-        //var processed_collection = this.processCollection(collection);
-        //var dates = this.getUniqueDates(processed_collection);
-        //console.log(this.processCollection(collection));
-        //console.log(this.getUniqueValuePerDate(dates, processed_collection));
-        //console.log(dates)
 
         return {
             values: values,
