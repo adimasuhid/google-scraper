@@ -30,7 +30,7 @@ function parseGoogle(err, data) {
     var count = 1;
 
     $ = cheerio.load(data);
-    $(".card-content-link").each(function(){
+    $(".card-click-target").each(function(){
         var package_name = $(this).attr("href").split("=")[1];
         ranking.push(createPackageRank(err, package_name, count));
         count = count + 1;
