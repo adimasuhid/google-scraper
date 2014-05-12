@@ -30,8 +30,8 @@ function parseGoogle(err, data) {
     var count = 1;
 
     $ = cheerio.load(data);
-    $(".card-click-target").each(function(){
-        var package_name = $(this).attr("href").split("=")[1];
+    $(".card").each(function(){
+        var package_name = $(this).attr("data-docid");
         ranking.push(createPackageRank(err, package_name, count));
         count = count + 1;
     });
