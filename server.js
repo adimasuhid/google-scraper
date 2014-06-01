@@ -30,6 +30,7 @@ function parseGoogle(err, data) {
     var count = 1;
 
     $ = cheerio.load(data);
+    console.log($(".card").length)
     $(".card").each(function(){
         var package_name = $(this).attr("data-docid");
         ranking.push(createPackageRank(err, package_name, count));
@@ -168,7 +169,7 @@ app.get("/packages/:package_name", function(req,res){
 
 //get all packages
 app.get("/packages", function(req, res){
-    models.Package.find().sort({ _id: 'desc'}).exec(function(err,data){
+    models.Package.find().exec(function(err,data){
         res.json(data);
     });
 });
@@ -203,6 +204,7 @@ app.get("/:package_name/:keyword", function(req, res){
     var ranks = [];
     open(url, function(err, google) {
         ranks = parseGoogle(err, google);
+        console.log(google);
         var rank = getPackageRank(err, package_name, ranks);
         console.log(rank);
         if (typeof rank === "undefined"){
