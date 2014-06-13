@@ -169,7 +169,7 @@ app.get("/packages/:package_name", function(req,res){
 
 //get all packages
 app.get("/packages", function(req, res){
-    models.Package.find().exec(function(err,data){
+    models.Package.find().sort({ _id: 'desc'}).exec(function(err,data){
         res.json(data);
     });
 });
